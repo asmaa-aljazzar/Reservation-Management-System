@@ -1,6 +1,11 @@
 <?php
 require_once __DIR__ . "/../../includes/paths.php";
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: ' . app_url('index.php'));
+    exit;
+}
+
 if (session_status() !== PHP_SESSION_ACTIVE)
     session_start();
 
