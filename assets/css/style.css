@@ -263,6 +263,54 @@ p {
     box-shadow: var(--focus-ring);
 }
 
+.password-input {
+    position: relative;
+}
+
+.password-input .form-control {
+    padding-right: 3rem;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 0.55rem;
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    padding: 0;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: var(--radius-small);
+    background: transparent;
+    color: var(--color-text-muted);
+}
+
+.password-toggle:hover {
+    background: var(--color-sand);
+    color: var(--color-brown);
+}
+
+.password-toggle svg {
+    width: 1.2rem;
+    height: 1.2rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.7;
+}
+
+.password-toggle [data-icon-visible],
+.password-toggle.is-visible [data-icon-hidden] {
+    display: none;
+}
+
+.password-toggle.is-visible [data-icon-visible] {
+    display: initial;
+}
+
 textarea.form-control {
     min-height: 7rem;
     resize: vertical;

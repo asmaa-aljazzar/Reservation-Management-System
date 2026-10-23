@@ -15,7 +15,7 @@ $pageDescription = $pageDescription ?? 'Find and request a library study room th
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <link rel="stylesheet" href="<?= htmlspecialchars(app_url('assets/css/style.css'), ENT_QUOTES, 'UTF-8') ?>?v=<?= (int) filemtime(dirname(__DIR__, 2) . '/assets/css/style.css') ?>">
     <link rel="stylesheet" href="<?= htmlspecialchars(app_url('assets/css/navbar.css'), ENT_QUOTES, 'UTF-8') ?>">
-    <script src="<?= htmlspecialchars(app_url('assets/js/main.js'), ENT_QUOTES, 'UTF-8') ?>" defer></script>
+    <script src="<?= htmlspecialchars(app_url('assets/js/main.js'), ENT_QUOTES, 'UTF-8') ?>?v=<?= (int) filemtime(dirname(__DIR__, 2) . '/assets/js/main.js') ?>" defer></script>
 </head>
 <body>
 <a class="skip-link" href="#main-content">Skip to main content</a>

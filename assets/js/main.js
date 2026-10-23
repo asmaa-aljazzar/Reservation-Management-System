@@ -38,6 +38,23 @@
         button.addEventListener('click', () => button.closest('.flash-toast')?.remove());
     });
 
+    document.querySelectorAll('.flash-toast.alert--success').forEach((toast) => {
+        window.setTimeout(() => toast.remove(), 6000);
+    });
+
+    document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+        const input = document.getElementById(button.getAttribute('aria-controls'));
+        if (!input) return;
+
+        button.addEventListener('click', () => {
+            const showPassword = input.type === 'password';
+            input.type = showPassword ? 'text' : 'password';
+            button.setAttribute('aria-label', showPassword ? 'Hide password' : 'Show password');
+            button.setAttribute('aria-pressed', String(showPassword));
+            button.classList.toggle('is-visible', showPassword);
+        });
+    });
+
     const revealItems = document.querySelectorAll('[data-reveal]');
     if ('IntersectionObserver' in window && revealItems.length) {
         root.classList.add('reveal-ready');
