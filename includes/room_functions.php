@@ -49,6 +49,13 @@ function roomExists(int $roomId): bool
     return $stmt->fetchColumn() !== false;
 }
 
+function isRoomActive(int $roomId): bool
+{
+    $stmt = prepare("SELECT 1 FROM rooms WHERE room_id = :roomId AND is_active = 1");
+    $stmt->execute([":roomId" => $roomId]);
+    return $stmt->fetchColumn() !== false;
+}
+
 function maxSlotCapacity(int $roomId): int
 {
     //? COALESCE(value, fallback) returns the first value that isn’t NULL.
@@ -122,4 +129,12 @@ function setRoomStatus(int $roomId, bool $isActive): bool
         ":roomId" => $roomId
     ]);
     return $stmt->rowCount() === 1;
+}
+
+function roomCapacity(int $roomId): int
+{
+    $stmt = prepare("SELECT room_capacity FROM rooms WHERE room_id = :roomId");
+    $stmt->execute([":roomId" => $roomId]);
+    $capacity = $stmt->fetchColumn();
+    return (int) $capacity;
 }

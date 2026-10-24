@@ -128,6 +128,31 @@
         syncButtons();
     });
 
+    const slotRoomSelect = document.querySelector('#slot-room');
+    const slotCapacityInput = document.querySelector('#slot-capacity');
+    const slotCapacityHint = document.querySelector('#slot-capacity-hint');
+    if (slotRoomSelect && slotCapacityInput && slotCapacityHint) {
+        const syncSlotCapacity = () => {
+            const maxCapacity = slotRoomSelect.selectedOptions[0]?.dataset.capacity;
+            if (!maxCapacity) {
+                slotCapacityInput.removeAttribute('max');
+                slotCapacityHint.textContent = 'Select a room to see its maximum capacity.';
+                slotCapacityInput.dispatchEvent(new Event('input', { bubbles: true }));
+                return;
+            }
+
+            slotCapacityInput.max = maxCapacity;
+            slotCapacityHint.textContent = `This room can hold up to ${maxCapacity} people.`;
+            if (Number(slotCapacityInput.value) > Number(maxCapacity)) {
+                slotCapacityInput.value = maxCapacity;
+            }
+            slotCapacityInput.dispatchEvent(new Event('input', { bubbles: true }));
+        };
+
+        slotRoomSelect.addEventListener('change', syncSlotCapacity);
+        syncSlotCapacity();
+    }
+
     const roomDialog = document.querySelector('#room-edit-dialog');
     if (roomDialog instanceof HTMLDialogElement) {
         const roomIdInput = roomDialog.querySelector('#edit-room-id');
@@ -155,6 +180,38 @@
 
         roomDialog.addEventListener('click', (event) => {
             if (event.target === roomDialog) roomDialog.close();
+        });
+    }
+
+    const slotDialog = document.querySelector('#slot-edit-dialog');
+    if (slotDialog instanceof HTMLDialogElement) {
+        const slotIdInput = slotDialog.querySelector('#edit-slot-id');
+        const slotPageInput = slotDialog.querySelector('#edit-slot-page');
+        const slotDateInput = slotDialog.querySelector('#edit-slot-date');
+        const slotStartInput = slotDialog.querySelector('#edit-slot-start');
+        const slotEndInput = slotDialog.querySelector('#edit-slot-end');
+        const slotCapacityInput = slotDialog.querySelector('#edit-slot-capacity');
+
+        document.querySelectorAll('[data-slot-edit]').forEach((button) => {
+            button.addEventListener('click', () => {
+                slotIdInput.value = button.dataset.slotId || '';
+                slotPageInput.value = button.dataset.slotPage || '1';
+                slotDateInput.value = button.dataset.slotDate || '';
+                slotStartInput.value = button.dataset.slotStart || '';
+                slotEndInput.value = button.dataset.slotEnd || '';
+                slotCapacityInput.value = button.dataset.slotCapacity || '';
+                slotCapacityInput.dispatchEvent(new Event('input', { bubbles: true }));
+                slotDialog.showModal();
+                slotDateInput.focus();
+            });
+        });
+
+        slotDialog.querySelectorAll('[data-slot-edit-close]').forEach((button) => {
+            button.addEventListener('click', () => slotDialog.close());
+        });
+
+        slotDialog.addEventListener('click', (event) => {
+            if (event.target === slotDialog) slotDialog.close();
         });
     }
 
