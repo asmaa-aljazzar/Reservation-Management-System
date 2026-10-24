@@ -26,10 +26,16 @@ CREATE TABLE IF NOT EXISTS rooms (
     room_name VARCHAR(120) NOT NULL,
     room_capacity INT UNSIGNED NOT NULL,
     description TEXT NULL,
+    is_active TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (room_id),
-    UNIQUE KEY uq_rooms_name (room_name)
+    UNIQUE KEY uq_rooms_name (room_name),
+    KEY idx_rooms_active (is_active)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- For a database created before is_active was added, run this once:
+-- ALTER TABLE rooms ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1 AFTER description;
+-- CREATE INDEX idx_rooms_active ON rooms (is_active);
 
 CREATE TABLE IF NOT EXISTS slots (
     slot_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -38,14 +44,20 @@ CREATE TABLE IF NOT EXISTS slots (
     start_time TIME NOT NULL,
     end_time TIME NOT NULL,
     slot_capacity INT UNSIGNED NOT NULL,
+    status ENUM('active', 'cancelled') NOT NULL DEFAULT 'active',
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (slot_id),
     UNIQUE KEY uq_slots_room_date_start (room_id, slot_date, start_time),
     KEY idx_slots_date_time (slot_date, start_time),
+    KEY idx_slots_status_date_time (status, slot_date, start_time),
     CONSTRAINT fk_slots_room
         FOREIGN KEY (room_id) REFERENCES rooms (room_id)
         ON UPDATE CASCADE ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- For a database created before slot status was added, run this once:
+-- ALTER TABLE slots ADD COLUMN status ENUM('active', 'cancelled') NOT NULL DEFAULT 'active' AFTER slot_capacity;
+-- CREATE INDEX idx_slots_status_date_time ON slots (status, slot_date, start_time);
 
 CREATE TABLE IF NOT EXISTS bookings (
     booking_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

@@ -14,9 +14,8 @@ function checkRole(string $requiredRole): bool
 
 function requireRole(string $requiredRole): void
 {
-    if (checkRole($requiredRole)) {
+    if (checkRole($requiredRole))
         return;
-    }
 
     $role = $_SESSION['user']['role'] ?? null;
 

@@ -48,3 +48,38 @@ function passwordValidationErrors(string $password) : array
 
     return $errors;
 }
+
+function isValidRoomData(string $roomName, int $roomCapacity, ?string $description): bool
+{
+    $roomName = trim($roomName);
+
+    if ($roomName === '' || mb_strlen($roomName, 'UTF-8') > 120) {
+        return false;
+    }
+
+    if ($roomCapacity < 1) {
+        return false;
+    }
+
+    // The MySQL TEXT type can hold up to 65,535 bytes.
+    if ($description !== null && strlen($description) > 65535) {
+        return false;
+    }
+
+    return true;
+}
+
+// function isValidRoomStatus(string $status): bool
+// {
+//     // TODO: Accept only active or inactive.
+// }
+
+// function isValidSlotStatus(string $status): bool
+// {
+//     // TODO: Match the schema's active or cancelled slot statuses.
+// }
+
+// function isValidReservationStatus(string $status): bool
+// {
+//     // TODO: Accept only the reservation statuses an admin may set.
+// }

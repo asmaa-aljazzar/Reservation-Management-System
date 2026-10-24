@@ -18,7 +18,15 @@ require __DIR__ . '/includes/layout/navbar.php';
         </section>
 
         <section class="auth-card card" aria-labelledby="login-title">
-            <div class="auth-card__heading"><h2 id="login-title">Log in</h2></div>
+            <div class="auth-card__heading auth-card__heading--demos">
+                <h2 id="login-title">Log in</h2>
+                <div class="demo-login-buttons" aria-label="Fill in a demo account">
+                    <button class="demo-login-button demo-login-button--admin" type="button" data-demo-login data-email="demo.admin@example.com" data-password="Demo123!">Demo admin</button>
+                    <button class="demo-login-button" type="button" data-demo-login data-email="demo.user1@example.com" data-password="Demo123!">Demo user 1</button>
+                    <button class="demo-login-button" type="button" data-demo-login data-email="demo.user2@example.com" data-password="Demo123!">Demo user 2</button>
+                    <button class="demo-login-button" type="button" data-demo-login data-email="demo.user3@example.com" data-password="Demo123!">Demo user 3</button>
+                </div>
+            </div>
             <form class="auth-form" action="<?= htmlspecialchars(app_url('actions/auth/login.php'), ENT_QUOTES, 'UTF-8') ?>" method="post">
                 <div class="form-field">
                     <label class="form-label" for="email">Email address</label>

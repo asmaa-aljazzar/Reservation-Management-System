@@ -37,7 +37,7 @@
     --radius-large: 1.25rem;
     --radius-pill: 999px;
 
-    --shadow-card: 0 0.5rem 1.5rem rgb(65 43 31 / 8%);
+    --shadow-card: 0 0 1.25rem rgb(65 43 31 / 14%);
     --content-width: 72rem;
     --focus-ring: 0 0 0 3px rgb(199 125 91 / 35%);
 }
@@ -52,6 +52,41 @@ html {
     min-width: 320px;
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    scrollbar-color: var(--color-terracotta) transparent;
+    scrollbar-width: thin;
+}
+
+/* Keep scrollbars visible but blend their track into the page. */
+* {
+    scrollbar-color: var(--color-terracotta) transparent;
+    scrollbar-width: thin;
+}
+
+*::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    background: transparent;
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: var(--radius-pill);
+    background: var(--color-terracotta);
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: var(--color-terracotta-deep);
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-button {
+    display: none;
 }
 
 body {
@@ -261,6 +296,55 @@ p {
     border-color: var(--color-terracotta-deep);
     outline: none;
     box-shadow: var(--focus-ring);
+}
+
+.number-stepper {
+    display: grid;
+    grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
+}
+
+.number-stepper input[type="number"] {
+    min-width: 0;
+    border-radius: 0;
+    text-align: center;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.number-stepper input[type="number"]::-webkit-inner-spin-button,
+.number-stepper input[type="number"]::-webkit-outer-spin-button {
+    margin: 0;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.number-stepper__button {
+    min-height: 2.875rem;
+    border: 1px solid var(--color-border);
+    background: var(--color-ivory);
+    color: var(--color-brown);
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1;
+    touch-action: none;
+    user-select: none;
+}
+
+.number-stepper__button:first-child {
+    border-radius: var(--radius-small) 0 0 var(--radius-small);
+}
+
+.number-stepper__button:last-child {
+    border-radius: 0 var(--radius-small) var(--radius-small) 0;
+}
+
+.number-stepper__button:hover:not(:disabled) {
+    background: var(--color-sand);
+}
+
+.number-stepper__button:disabled {
+    cursor: not-allowed;
+    opacity: .45;
 }
 
 .password-input {
@@ -549,8 +633,6 @@ textarea.form-control {
 
 /* Shared authentication layout */
 .auth-page{display:flex;align-items:center;padding-block:1.25rem}
-html:has(.auth-page){scrollbar-width:none}
-html:has(.auth-page)::-webkit-scrollbar{display:none}
 .auth-layout{display:grid;grid-template-columns:minmax(0,.82fr) minmax(25rem,1fr);align-items:stretch;gap:clamp(1.25rem,3vw,2.5rem)}
 .auth-intro{position:relative;display:flex;min-height:0;flex-direction:column;justify-content:center;overflow:hidden;padding:clamp(1.5rem,3vw,2.75rem);border-radius:var(--radius-large);background:var(--color-brown);color:#FFF8F1;isolation:isolate}
 .auth-intro::before{position:absolute;z-index:0;top:-35%;right:-30%;width:85%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgb(240 184 153 / 34%),rgb(240 184 153 / 14%) 42%,transparent 70%);content:"";animation:auth-glow-drift 9s ease-in-out infinite alternate}
@@ -560,6 +642,12 @@ html:has(.auth-page)::-webkit-scrollbar{display:none}
 .auth-intro h1{animation-delay:140ms}.auth-intro__text{animation-delay:280ms}
 .auth-card{align-self:center;width:100%;max-width:36rem;justify-self:center;padding:clamp(1.25rem,2.5vw,2rem)}
 .auth-card__heading{margin-bottom:var(--space-4)}.auth-card__heading h2{margin:0;font-size:clamp(1.5rem,2.7vw,2rem)}
+.auth-card__heading--demos{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-3)}
+.demo-login-buttons{display:flex;flex:1;flex-wrap:nowrap;justify-content:flex-end;gap:.35rem;max-width:none}
+.demo-login-button{min-height:2rem;padding:.3rem .5rem;border:1px solid var(--color-border);border-radius:var(--radius-pill);background:var(--color-surface);color:var(--color-brown);font-size:.75rem;font-weight:650;line-height:1.1}
+.demo-login-button:hover{border-color:var(--color-terracotta);background:var(--color-sand)}
+.demo-login-button--admin{border-color:var(--color-brown);background:var(--color-brown);color:var(--color-surface)}
+.demo-login-button--admin:hover{border-color:var(--color-terracotta);background:var(--color-terracotta);color:var(--color-text)}
 .auth-form{display:grid;gap:.75rem}.auth-form__passwords{display:grid;grid-template-columns:1fr;gap:.75rem}
 .auth-form .form-field{gap:.35rem}.auth-form .form-control{min-height:2.625rem;padding-block:.5rem}.auth-form__submit{width:100%;min-height:2.75rem;margin-top:.25rem}
 .auth-card__switch{margin:var(--space-4) 0 0;color:var(--color-text-muted);font-size:var(--font-size-small);text-align:center}.auth-card__switch a{font-weight:700}
@@ -569,4 +657,5 @@ html:has(.auth-page)::-webkit-scrollbar{display:none}
 @keyframes auth-glow-drift{from{transform:translate(-9%,0) scale(.88)}to{transform:translate(9%,10%) scale(1.12)}}
 @media(prefers-reduced-motion:reduce){.auth-intro::before,.auth-intro .eyebrow,.auth-intro h1,.auth-intro__text{animation:none!important}}
 @media(max-width:800px){.auth-layout{grid-template-columns:1fr;max-width:38rem}.auth-intro{padding:var(--space-5)}.auth-intro h1{max-width:14ch;font-size:clamp(2rem,7vw,2.75rem)}.auth-card{max-width:none}}
+@media(max-width:560px){.auth-card__heading--demos{flex-direction:column}.demo-login-buttons{flex-wrap:wrap;justify-content:flex-start;max-width:none}}
 @media(max-width:480px){.auth-form__passwords{grid-template-columns:1fr}.auth-page{padding-block:var(--space-4)}.auth-page+.site-footer .site-footer__inner{grid-template-columns:1fr}}

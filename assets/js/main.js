@@ -55,6 +55,122 @@
         });
     });
 
+    document.querySelectorAll('.number-stepper').forEach((control) => {
+        const input = control.querySelector('input[type="number"]');
+        const buttons = control.querySelectorAll('[data-number-step]');
+        if (!input) return;
+
+        const syncButtons = () => {
+            const min = input.min === '' ? -Infinity : Number(input.min);
+            const max = input.max === '' ? Infinity : Number(input.max);
+            const value = input.value === '' ? NaN : Number(input.value);
+            buttons.forEach((button) => {
+                const direction = Number(button.dataset.numberStep);
+                button.disabled = direction < 0
+                    ? Number.isNaN(value) || value <= min
+                    : value >= max;
+            });
+        };
+
+        const changeValue = (button) => {
+            if (button.disabled) return;
+            const direction = Number(button.dataset.numberStep);
+            const step = Number(input.step) || 1;
+            const min = input.min === '' ? 0 : Number(input.min);
+            const current = input.value === ''
+                ? (direction > 0 ? min - step : min + step)
+                : Number(input.value);
+            input.value = String(Math.max(min, current + direction * step));
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+            input.focus();
+            syncButtons();
+        };
+
+        let holdDelay = null;
+        let holdRepeat = null;
+        const stopHold = () => {
+            window.clearTimeout(holdDelay);
+            window.clearInterval(holdRepeat);
+            holdDelay = null;
+            holdRepeat = null;
+        };
+
+        buttons.forEach((button) => {
+            button.addEventListener('pointerdown', (event) => {
+                if (event.button !== 0 || button.disabled) return;
+                event.preventDefault();
+                button.setPointerCapture?.(event.pointerId);
+                changeValue(button);
+                holdDelay = window.setTimeout(() => {
+                    holdRepeat = window.setInterval(() => {
+                        if (button.disabled) {
+                            stopHold();
+                            return;
+                        }
+                        changeValue(button);
+                    }, 90);
+                }, 350);
+            });
+            button.addEventListener('pointerup', stopHold);
+            button.addEventListener('pointercancel', stopHold);
+            button.addEventListener('lostpointercapture', stopHold);
+            button.addEventListener('click', (event) => {
+                if (event.detail !== 0) return;
+                changeValue(button);
+            });
+        });
+
+        document.addEventListener('pointerup', stopHold);
+        window.addEventListener('blur', stopHold);
+
+        input.addEventListener('input', syncButtons);
+        syncButtons();
+    });
+
+    const roomDialog = document.querySelector('#room-edit-dialog');
+    if (roomDialog instanceof HTMLDialogElement) {
+        const roomIdInput = roomDialog.querySelector('#edit-room-id');
+        const roomPageInput = roomDialog.querySelector('#edit-room-page');
+        const roomNameInput = roomDialog.querySelector('#edit-room-name');
+        const roomCapacityInput = roomDialog.querySelector('#edit-room-capacity');
+        const roomDescriptionInput = roomDialog.querySelector('#edit-room-description');
+
+        document.querySelectorAll('[data-room-edit]').forEach((button) => {
+            button.addEventListener('click', () => {
+                roomIdInput.value = button.dataset.roomId || '';
+                roomPageInput.value = button.dataset.roomPage || '1';
+                roomNameInput.value = button.dataset.roomName || '';
+                roomCapacityInput.value = button.dataset.roomCapacity || '';
+                roomCapacityInput.dispatchEvent(new Event('input', { bubbles: true }));
+                roomDescriptionInput.value = button.dataset.roomDescription || '';
+                roomDialog.showModal();
+                roomNameInput.focus();
+            });
+        });
+
+        roomDialog.querySelectorAll('[data-room-edit-close]').forEach((button) => {
+            button.addEventListener('click', () => roomDialog.close());
+        });
+
+        roomDialog.addEventListener('click', (event) => {
+            if (event.target === roomDialog) roomDialog.close();
+        });
+    }
+
+    document.querySelectorAll('[data-demo-login]').forEach((button) => {
+        button.addEventListener('click', () => {
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            if (!emailInput || !passwordInput) return;
+
+            emailInput.value = button.dataset.email || '';
+            passwordInput.value = button.dataset.password || '';
+            emailInput.dispatchEvent(new Event('input', { bubbles: true }));
+            passwordInput.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+    });
+
     const revealItems = document.querySelectorAll('[data-reveal]');
     if ('IntersectionObserver' in window && revealItems.length) {
         root.classList.add('reveal-ready');
