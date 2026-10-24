@@ -16,8 +16,20 @@ $isLoggedIn = isset($_SESSION['user']['user_id']);
         </button>
         <div class="site-nav__menu" id="primary-menu" data-nav-menu>
             <div class="site-nav__links">
-                <a class="site-nav__link<?= $currentPage === 'index.php' ? ' is-current' : '' ?>" href="<?= htmlspecialchars(app_url('index.php'), ENT_QUOTES, 'UTF-8') ?>"<?= $currentPage === 'index.php' ? ' aria-current="page"' : '' ?>>Home</a>
-                <?php if ($userRole === 'admin'): ?>
+                <?php if ($currentPage === 'index.php'): ?>
+                    <a class="site-nav__link is-current" href="#home" aria-current="page">Home</a>
+                    <a class="site-nav__link" href="#rooms">Rooms</a>
+                    <a class="site-nav__link" href="#how-it-works">How it works</a>
+                    <a class="site-nav__link" href="#get-started">Get started</a>
+                <?php else: ?>
+                    <a class="site-nav__link" href="<?= htmlspecialchars(app_url('index.php'), ENT_QUOTES, 'UTF-8') ?>">Home</a>
+                <?php endif; ?>
+                <?php if ($currentPage === 'index.php' && $userRole === 'admin'): ?>
+                    <a class="site-nav__link" href="<?= htmlspecialchars(app_url('pages/admin/dashboard.php'), ENT_QUOTES, 'UTF-8') ?>">Admin dashboard</a>
+                <?php elseif ($currentPage === 'index.php' && $userRole === 'user'): ?>
+                    <a class="site-nav__link" href="<?= htmlspecialchars(app_url('pages/my-reservations.php'), ENT_QUOTES, 'UTF-8') ?>">My reservations</a>
+                <?php endif; ?>
+                <?php if ($currentPage !== 'index.php' && $userRole === 'admin'): ?>
                     <?php
                     $adminNavLinks = [
                         ['rooms.php', 'Rooms', 'pages/admin/rooms.php'],
@@ -36,7 +48,7 @@ $isLoggedIn = isset($_SESSION['user']['user_id']);
                             <?php endforeach; ?>
                         </div>
                     </details>
-                <?php else: ?>
+                <?php elseif ($currentPage !== 'index.php'): ?>
                     <a class="site-nav__link<?= $currentPage === 'rooms.php' ? ' is-current' : '' ?>" href="<?= htmlspecialchars(app_url('pages/rooms.php'), ENT_QUOTES, 'UTF-8') ?>"<?= $currentPage === 'rooms.php' ? ' aria-current="page"' : '' ?>>Rooms</a>
                     <a class="site-nav__link<?= $currentPage === 'all-slots.php' ? ' is-current' : '' ?>" href="<?= htmlspecialchars(app_url('pages/all-slots.php'), ENT_QUOTES, 'UTF-8') ?>"<?= $currentPage === 'all-slots.php' ? ' aria-current="page"' : '' ?>>All slots</a>
                     <?php if ($userRole === 'user'): ?>

@@ -1,6 +1,6 @@
 <?php require __DIR__ . '/includes/layout/header.php'; require __DIR__ . '/includes/layout/navbar.php'; ?>
 <main id="main-content">
-    <section class="home-hero" aria-labelledby="hero-title">
+    <section class="home-hero" id="home" aria-labelledby="hero-title">
       <div class="container home-hero__grid">
         <div class="home-hero__copy" data-reveal>
           <p class="eyebrow"><span class="eyebrow__dot" aria-hidden="true"></span>A quieter place to get things done</p>
@@ -23,7 +23,7 @@
       <div class="home-hero__decoration home-hero__decoration--one" aria-hidden="true"></div><div class="home-hero__decoration home-hero__decoration--two" aria-hidden="true"></div>
     </section>
 
-    <section class="home-section container" aria-labelledby="rooms-title">
+    <section class="home-section container" id="rooms" aria-labelledby="rooms-title">
       <div class="section-heading home-section__heading" data-reveal><div><p class="eyebrow">A good place to begin</p><h2 id="rooms-title">Spaces for every kind of study</h2><p class="text-muted">Find a quiet corner for solo work or room to think together.</p></div><a class="home-section__all-link" href="pages/rooms.php">See all rooms <span aria-hidden="true">→</span></a></div>
       <!-- Sample content for the frontend preview; replace with database results later. -->
       <div class="room-grid">
@@ -43,7 +43,7 @@
       </div>
     </div></section>
 
-    <section class="closing-cta container" data-reveal aria-labelledby="closing-title"><div><p class="eyebrow">Make room for a good study session</p><h2 id="closing-title">Your next focused hour starts here.</h2></div><a class="button button--primary" href="pages/rooms.php">Explore rooms <span aria-hidden="true">→</span></a></section>
+    <section class="closing-cta container" id="get-started" data-reveal aria-labelledby="closing-title"><div><p class="eyebrow">Make room for a good study session</p><h2 id="closing-title">Your next focused hour starts here.</h2></div><a class="button button--primary" href="pages/rooms.php">Explore rooms <span aria-hidden="true">→</span></a></section>
   </main>
 
   <?php require __DIR__ . '/includes/layout/footer.php'; ?>
