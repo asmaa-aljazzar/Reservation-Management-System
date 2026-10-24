@@ -17,6 +17,11 @@ function isValidEmail(string $email): bool
         && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
 }
 
+function isValidUserStatusData(int $userId, string $status): bool
+{
+    return $userId > 0 && in_array($status, ['0', '1'], true);
+}
+
 function passwordValidationErrors(string $password): array
 {
 
