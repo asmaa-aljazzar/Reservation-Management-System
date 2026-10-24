@@ -274,6 +274,20 @@ body.admin-app {
     font-size: var(--font-size-small)
 }
 
+.admin-filter {
+    display: flex;
+    align-items: flex-end;
+    gap: .5rem
+}
+
+.admin-filter .form-label {
+    margin-bottom: .45rem
+}
+
+.admin-filter .form-control {
+    min-width: 9rem
+}
+
 .admin-form {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -406,15 +420,13 @@ body.admin-app {
 }
 
 .room-actions {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: .5rem;
+    text-align: center;
     white-space: nowrap
 }
 
 .room-actions form {
-    margin: 0
+    display: inline-flex;
+    margin: 0 .25rem 0 0
 }
 
 .room-edit-dialog {
