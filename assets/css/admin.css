@@ -231,6 +231,171 @@ body.admin-app {
     margin: 0
 }
 
+.dashboard-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-3)
+}
+
+.dashboard-stat {
+    display: grid;
+    gap: .6rem;
+    padding: var(--space-4);
+    color: var(--color-text);
+    text-decoration: none;
+    transition: transform .18s ease, box-shadow .18s ease
+}
+
+.dashboard-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card)
+}
+
+.dashboard-stat__label {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-small);
+    font-weight: 650
+}
+
+.dashboard-stat strong {
+    color: var(--color-brown);
+    font-size: clamp(1.75rem, 3vw, 2.4rem);
+    line-height: 1
+}
+
+.dashboard-charts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4)
+}
+
+.dashboard-chart__bars {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    align-items: end;
+    gap: .5rem;
+    min-height: 12rem;
+    padding-top: var(--space-3)
+}
+
+.dashboard-chart__column {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    align-items: end;
+    justify-items: center;
+    gap: .45rem;
+    min-width: 0;
+    height: 100%
+}
+
+.dashboard-chart__value,
+.dashboard-chart__label {
+    color: var(--color-text-muted);
+    font-size: .75rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap
+}
+
+.dashboard-chart__track {
+    display: flex;
+    width: min(2rem, 70%);
+    height: 8rem;
+    align-items: flex-end;
+    overflow: hidden;
+    border-radius: .45rem .45rem 0 0;
+    background: var(--color-ivory)
+}
+
+.dashboard-chart__bar {
+    width: 100%;
+    min-height: 0;
+    border-radius: .4rem .4rem 0 0;
+    background: var(--color-terracotta);
+    transition: height .25s ease
+}
+
+.dashboard-status-chart {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-5);
+    padding-block: var(--space-3)
+}
+
+.dashboard-status-chart__pie {
+    width: min(12rem, 48%);
+    aspect-ratio: 1;
+    flex: 0 0 auto;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    box-shadow: var(--shadow-card)
+}
+
+.dashboard-status-chart__legend {
+    display: grid;
+    gap: .7rem;
+    margin: 0;
+    padding: 0;
+    list-style: none
+}
+
+.dashboard-status-chart__item {
+    display: grid;
+    grid-template-columns: .75rem minmax(5rem, 1fr) auto;
+    align-items: center;
+    gap: .55rem;
+    color: var(--color-text-muted);
+    font-size: var(--font-size-small)
+}
+
+.dashboard-status-chart__item strong {
+    color: var(--color-text);
+    font-variant-numeric: tabular-nums
+}
+
+.dashboard-status-chart__key {
+    display: block;
+    width: .7rem;
+    height: .7rem;
+    border-radius: 50%;
+    background: var(--color-terracotta)
+}
+
+.dashboard-status-chart__key--confirmed {
+    background: var(--color-success)
+}
+
+.dashboard-status-chart__key--rejected {
+    background: var(--color-danger)
+}
+
+.dashboard-status-chart__key--cancelled {
+    background: var(--color-text-muted)
+}
+
+.dashboard-lists {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--space-4)
+}
+
+.dashboard-panel__link {
+    flex: 0 0 auto;
+    color: var(--color-terracotta-deep);
+    font-size: var(--font-size-small);
+    font-weight: 700;
+    text-decoration: none
+}
+
+.dashboard-panel__link:hover {
+    text-decoration: underline
+}
+
+.dashboard-lists .admin-panel {
+    padding: var(--space-4)
+}
+
 .admin-page-heading {
     margin-bottom: var(--space-1)
 }
@@ -514,6 +679,27 @@ body.admin-app {
 }
 
 @media(max-width:800px) {
+    .dashboard-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+    }
+
+    .dashboard-lists {
+        grid-template-columns: 1fr
+    }
+
+    .dashboard-charts {
+        grid-template-columns: 1fr
+    }
+
+    .dashboard-status-chart {
+        justify-content: flex-start;
+        gap: var(--space-4)
+    }
+
+    .dashboard-status-chart__pie {
+        width: min(10rem, 45%)
+    }
+
     .admin-layout {
         grid-template-columns: 1fr;
         grid-template-rows: auto minmax(0, 1fr);
@@ -542,6 +728,19 @@ body.admin-app {
 
     .admin-panel {
         padding: var(--space-4)
+    }
+
+    .admin-panel__heading {
+        flex-wrap: wrap
+    }
+
+    .admin-filter {
+        width: 100%;
+        flex-wrap: wrap
+    }
+
+    .admin-filter .form-control {
+        flex: 1 1 9rem
     }
 
     .admin-form {
