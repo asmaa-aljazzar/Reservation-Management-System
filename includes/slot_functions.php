@@ -20,7 +20,10 @@ function getAllSlots(int $page = 1, int $perPage = 10): array
         "SELECT slots.*, rooms.room_name
         FROM slots
         JOIN rooms ON slots.room_id = rooms.room_id
-        ORDER BY slots.created_at DESC, slots.slot_date ASC
+        ORDER BY CASE WHEN slots.slot_date >= CURRENT_DATE THEN 0 ELSE 1 END,
+                 CASE WHEN slots.slot_date >= CURRENT_DATE THEN slots.slot_date END ASC,
+                 CASE WHEN slots.slot_date < CURRENT_DATE THEN slots.slot_date END DESC,
+                 slots.start_time ASC
         LIMIT :limit OFFSET :offset"
     );
 
@@ -31,23 +34,105 @@ function getAllSlots(int $page = 1, int $perPage = 10): array
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-function getActiveSlots(): array
+function countAvailableSlots(): int
 {
     $stmt = prepare(
-        "SELECT slots.*
-         FROM slots
-         JOIN rooms ON slots.room_id = rooms.room_id
-         WHERE slots.is_active = 1
-           AND rooms.is_active = 1
-           AND CONCAT(slots.slot_date, ' ', slots.start_time) > NOW()
-         ORDER BY slots.slot_date, slots.start_time"
+        "SELECT COUNT(*) FROM (
+            SELECT s.slot_id,
+                   GREATEST(s.slot_capacity - COALESCE(SUM(CASE WHEN b.status = 'confirmed' THEN b.number_of_people ELSE 0 END), 0), 0) AS remaining_seats
+            FROM slots s
+            JOIN rooms r ON r.room_id = s.room_id AND r.is_active = 1
+            LEFT JOIN bookings b ON b.slot_id = s.slot_id AND b.status = 'confirmed'
+            WHERE s.is_active = 1
+              AND (s.slot_date > CURRENT_DATE OR (s.slot_date = CURRENT_DATE AND s.start_time > CURRENT_TIME))
+            GROUP BY s.slot_id, s.slot_capacity
+            HAVING remaining_seats > 0
+        ) AS available_slots"
     );
-
     $stmt->execute();
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    return (int) $stmt->fetchColumn();
 }
 
+function getActiveSlots(int $page = 1, int $perPage = 9): array
+{
+    $page = max(1, $page);
+    $perPage = max(1, $perPage);
+    $offset = ($page - 1) * $perPage;
 
+    $stmt = prepare(
+        "SELECT s.slot_id, s.room_id, s.slot_date, s.start_time, s.end_time,
+                s.slot_capacity, r.room_name, r.image_url,
+                COALESCE(SUM(CASE WHEN b.status = 'confirmed' THEN b.number_of_people ELSE 0 END), 0) AS confirmed_seats,
+                COALESCE(SUM(CASE WHEN b.status = 'pending' THEN b.number_of_people ELSE 0 END), 0) AS pending_seats,
+                GREATEST(s.slot_capacity - COALESCE(SUM(CASE WHEN b.status = 'confirmed' THEN b.number_of_people ELSE 0 END), 0), 0) AS remaining_seats
+         FROM slots s
+         JOIN rooms r ON r.room_id = s.room_id
+         LEFT JOIN bookings b ON b.slot_id = s.slot_id AND b.status IN ('confirmed', 'pending')
+         WHERE s.is_active = 1
+           AND r.is_active = 1
+           AND (s.slot_date > CURRENT_DATE OR (s.slot_date = CURRENT_DATE AND s.start_time > CURRENT_TIME))
+         GROUP BY s.slot_id, s.room_id, s.slot_date, s.start_time, s.end_time,
+                  s.slot_capacity, r.room_name, r.image_url
+         HAVING remaining_seats > 0
+         ORDER BY s.slot_date ASC, s.start_time ASC
+         LIMIT :limit OFFSET :offset"
+    );
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+function countAvailableSlotsForRoom(int $roomId): int
+{
+    $stmt = prepare(
+        "SELECT COUNT(*) FROM (
+            SELECT s.slot_id,
+                   GREATEST(s.slot_capacity - COALESCE(SUM(CASE WHEN b.status = 'confirmed' THEN b.number_of_people ELSE 0 END), 0), 0) AS remaining_seats
+            FROM slots s
+            LEFT JOIN bookings b ON b.slot_id = s.slot_id AND b.status = 'confirmed'
+            WHERE s.room_id = :roomId
+              AND s.is_active = 1
+              AND (s.slot_date > CURRENT_DATE OR (s.slot_date = CURRENT_DATE AND s.start_time > CURRENT_TIME))
+            GROUP BY s.slot_id, s.slot_capacity
+            HAVING remaining_seats > 0
+        ) AS available_slots"
+    );
+    $stmt->execute([':roomId' => $roomId]);
+
+    return (int) $stmt->fetchColumn();
+}
+
+function getUpcomingSlotsForRoom(int $roomId, int $page = 1, int $perPage = 9): array
+{
+    $page = max(1, $page);
+    $perPage = max(1, $perPage);
+    $offset = ($page - 1) * $perPage;
+
+    $stmt = prepare(
+        "SELECT s.slot_id, s.room_id, s.slot_date, s.start_time, s.end_time,
+                s.slot_capacity,
+                COALESCE(SUM(CASE WHEN b.status = 'confirmed' THEN b.number_of_people ELSE 0 END), 0) AS confirmed_seats,
+                COALESCE(SUM(CASE WHEN b.status = 'pending' THEN b.number_of_people ELSE 0 END), 0) AS pending_seats,
+                GREATEST(s.slot_capacity - COALESCE(SUM(CASE WHEN b.status = 'confirmed' THEN b.number_of_people ELSE 0 END), 0), 0) AS remaining_seats
+         FROM slots s
+         LEFT JOIN bookings b ON b.slot_id = s.slot_id AND b.status IN ('confirmed', 'pending')
+         WHERE s.room_id = :roomId
+           AND s.is_active = 1
+           AND (s.slot_date > CURRENT_DATE OR (s.slot_date = CURRENT_DATE AND s.start_time > CURRENT_TIME))
+         GROUP BY s.slot_id, s.room_id, s.slot_date, s.start_time, s.end_time, s.slot_capacity
+         HAVING remaining_seats > 0
+         ORDER BY s.slot_date ASC, s.start_time ASC
+         LIMIT :limit OFFSET :offset"
+    );
+    $stmt->bindValue(':roomId', $roomId, PDO::PARAM_INT);
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 function slotExists(int $slotId): bool
 {
     $stmt = prepare("SELECT 1 FROM slots WHERE slot_id = :slotId");

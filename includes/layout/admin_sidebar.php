@@ -24,4 +24,7 @@ $adminLinks = [
             <a class="admin-sidebar__link" href="<?= htmlspecialchars(app_url('pages/admin/slots.php#add-slot-title'), ENT_QUOTES, 'UTF-8') ?>"><span class="admin-shortcuts__plus" aria-hidden="true">+</span>Create slot</a>
         </div>
     </details>
+    <form action="<?= htmlspecialchars(app_url('actions/auth/logout.php'), ENT_QUOTES, 'UTF-8') ?>" method="post">
+        <button class="admin-sidebar__link admin-sidebar__logout" type="submit">Log out</button>
+    </form>
 </nav>

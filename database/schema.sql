@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS rooms (
     room_name VARCHAR(120) NOT NULL,
     room_capacity INT UNSIGNED NOT NULL,
     description TEXT NULL,
+    image_url VARCHAR(255) NULL,
     is_active TINYINT(1) NOT NULL DEFAULT 1,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (room_id),
@@ -36,6 +37,8 @@ CREATE TABLE IF NOT EXISTS rooms (
 -- For a database created before is_active was added, run this once:
 -- ALTER TABLE rooms ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1 AFTER description;
 -- CREATE INDEX idx_rooms_active ON rooms (is_active);
+-- For an existing database, run once to add room images:
+-- ALTER TABLE rooms ADD COLUMN image_url VARCHAR(255) NULL AFTER description;
 
 CREATE TABLE IF NOT EXISTS slots (
     slot_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

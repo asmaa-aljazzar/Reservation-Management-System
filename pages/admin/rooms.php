@@ -35,7 +35,7 @@ require __DIR__ . '/../../includes/layout/navbar.php';
                         <p class="text-muted">Add the room details below. You can schedule slots for it afterward.</p>
                     </div>
                 </div>
-                <form class="admin-form" action="<?= htmlspecialchars(app_url('actions/rooms/create.php'), ENT_QUOTES, 'UTF-8') ?>" method="post" aria-label="Create a room">
+                <form class="admin-form" action="<?= htmlspecialchars(app_url('actions/rooms/create.php'), ENT_QUOTES, 'UTF-8') ?>" method="post" enctype="multipart/form-data" aria-label="Create a room">
                     <div class="form-field">
                         <label class="form-label" for="room-name">Room name</label>
                         <input class="form-control" id="room-name" name="room_name" type="text" maxlength="120" placeholder="e.g. Quiet Study Room" autocomplete="off" required>
@@ -52,6 +52,11 @@ require __DIR__ . '/../../includes/layout/navbar.php';
                     <div class="form-field admin-form__wide">
                         <label class="form-label" for="room-description">Description <span class="text-muted">(optional)</span></label>
                         <textarea class="form-control" id="room-description" name="description" rows="3" placeholder="Describe the room and its features."></textarea>
+                    </div>
+                    <div class="form-field admin-form__wide">
+                        <label class="form-label" for="room-image">Room image <span class="text-muted">(optional)</span></label>
+                        <input class="form-control" id="room-image" name="room_image" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="room-image-hint">
+                        <small class="form-hint text-muted" id="room-image-hint">Choose a JPG, PNG, or WEBP image up to 5 MB.</small>
                     </div>
                     <div class="admin-form__wide admin-form__actions">
                         <button class="button button--primary" type="submit">Create room</button>

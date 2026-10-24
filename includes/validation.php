@@ -74,6 +74,39 @@ function isValidRoomData(string $roomName, int $roomCapacity, ?string $descripti
     return true;
 }
 
+function isValidRoomImage(?array $image): bool
+{
+    if ($image === null || ($image['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        return true;
+    }
+
+    if (($image['error'] ?? null) !== UPLOAD_ERR_OK
+        || !isset($image['tmp_name'], $image['size'])
+        || !is_uploaded_file($image['tmp_name'])
+        || $image['size'] < 1
+        || $image['size'] > 5 * 1024 * 1024
+    ) {
+        return false;
+    }
+
+    $fileInfo = new finfo(FILEINFO_MIME_TYPE);
+    $mimeType = $fileInfo->file($image['tmp_name']);
+
+    return in_array($mimeType, ['image/jpeg', 'image/png', 'image/webp'], true);
+}
+
+require_once __DIR__ . '/reservation_functions.php';
+
+function isValidReservationData(int $userId, int $slotId, int $numberOfPeople, string $purpose): bool
+{
+    if ($userId < 1 || $numberOfPeople < 1 || trim($purpose) === '' || strlen(trim($purpose)) > 1000) {
+        return false;
+    }
+
+    $slot = getSlotForReservation($slotId);
+    return $slot !== null && $numberOfPeople <= (int) $slot['remaining_seats'];
+}
+
 require_once __DIR__ . "/room_functions.php";
 
 function isValidSlotData(

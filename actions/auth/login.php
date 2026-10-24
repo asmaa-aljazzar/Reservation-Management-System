@@ -23,7 +23,13 @@ if (loginUser($email, $password)) {
     if (checkRole('admin')) {
         $destination = 'pages/admin/dashboard.php';
     } else {
-        $destination = 'pages/rooms.php';
+        $returnTo = $_SESSION['return_to'] ?? '';
+        if (preg_match('/^pages\\/create-reservation\\.php\\?slot_id=\\d+$/', $returnTo)) {
+            $destination = $returnTo;
+            unset($_SESSION['return_to']);
+        } else {
+            $destination = 'pages/rooms.php';
+        }
     }
 } else {
     $_SESSION['flash'] = [

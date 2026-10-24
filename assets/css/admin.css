@@ -97,6 +97,14 @@ body.admin-app {
     text-decoration: none
 }
 
+.admin-sidebar__logout {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    text-align: left
+}
+
 .admin-sidebar__link:hover,
 .admin-sidebar__link.is-current {
     background: var(--color-ivory);

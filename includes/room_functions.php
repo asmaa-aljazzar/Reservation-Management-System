@@ -19,7 +19,7 @@ function getAllRooms(int $page = 1, int $perPage = 10): array
 
     $stmt = prepare(
         "SELECT * FROM rooms
-        ORDER BY created_at DESC, room_name ASC
+        ORDER BY room_name ASC
         LIMIT :limit OFFSET :offset"
     );
 
@@ -42,6 +42,47 @@ function getActiveRooms(): array
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function countActiveRooms(): int
+{
+    $stmt = prepare("SELECT COUNT(*) FROM rooms WHERE is_active = 1");
+    $stmt->execute();
+
+    return (int) $stmt->fetchColumn();
+}
+
+function getActiveRoomsWithUpcomingSlotCounts(int $page = 1, int $perPage = 9): array
+{
+    $page = max(1, $page);
+    $perPage = max(1, $perPage);
+    $offset = ($page - 1) * $perPage;
+
+    $stmt = prepare(
+        "SELECT r.room_id, r.room_name, r.room_capacity, r.description, r.image_url,
+                COUNT(s.slot_id) AS upcoming_slots
+         FROM rooms r
+         LEFT JOIN slots s
+            ON s.room_id = r.room_id
+            AND s.is_active = 1
+            AND (s.slot_date > CURRENT_DATE OR (s.slot_date = CURRENT_DATE AND s.start_time > CURRENT_TIME))
+         WHERE r.is_active = 1
+         GROUP BY r.room_id, r.room_name, r.room_capacity, r.description, r.image_url
+         ORDER BY r.room_name ASC
+         LIMIT :limit OFFSET :offset"
+    );
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+function getActiveRoom(int $roomId): ?array
+{
+    $stmt = prepare("SELECT room_id, room_name, room_capacity, description, image_url FROM rooms WHERE room_id = :roomId AND is_active = 1");
+    $stmt->execute([':roomId' => $roomId]);
+    $room = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    return $room === false ? null : $room;
+}
 function roomExists(int $roomId): bool
 {
     $stmt = prepare("SELECT 1 FROM rooms WHERE room_id = :roomId");
@@ -69,13 +110,17 @@ function maxSlotCapacity(int $roomId): int
     return (int) $stmt->fetchColumn();
 }
 
-function createRoom(string $roomName, int $roomCapacity, ?string $description): bool
+function createRoom(string $roomName, int $roomCapacity, ?string $description, ?string $imageUrl = null): bool
 {
-    $stmt = prepare("INSERT INTO rooms (room_name, room_capacity, description) VALUES (:roomName, :roomCapacity, :description)");
+    $stmt = prepare(
+        "INSERT INTO rooms (room_name, room_capacity, description, image_url)
+         VALUES (:roomName, :roomCapacity, :description, :imageUrl)"
+    );
     $stmt->execute([
         ":roomName" => $roomName,
         ":roomCapacity" => $roomCapacity,
         ":description" => $description,
+        ":imageUrl" => $imageUrl,
     ]);
 
     return $stmt->rowCount() === 1;
