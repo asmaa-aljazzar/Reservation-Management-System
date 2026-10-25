@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/../includes/paths.php';
 require_once __DIR__ . '/../includes/room_functions.php';
 require_once __DIR__ . '/../includes/slot_functions.php';
 
