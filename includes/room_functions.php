@@ -19,7 +19,7 @@ function getAllRooms(int $page = 1, int $perPage = 10): array
 
     $stmt = prepare(
         "SELECT * FROM rooms
-        ORDER BY room_name ASC
+        ORDER BY created_at DESC
         LIMIT :limit OFFSET :offset"
     );
 
